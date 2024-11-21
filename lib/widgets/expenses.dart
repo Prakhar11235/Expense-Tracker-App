@@ -1,5 +1,6 @@
 import 'package:Kharcha/models/expense.dart';
 import 'package:Kharcha/widgets/expenses_list/expenses_list.dart';
+import 'package:Kharcha/widgets/new_expense.dart';
 
 import 'package:flutter/material.dart';
 
@@ -26,16 +27,33 @@ class _ExpensesState extends State<Expenses> {
       category: Category.leisure,
     ),
   ];
+
+  void _openAddExpenseSheet() {
+    showModalBottomSheet(
+      context: context,
+      builder: (ctx) => const NewExpense(),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: Column(
-      children: [
-        const Text('chart'),
-        Expanded(
-          child: ExpensesList(expenses: _registeredExpenses),
+        appBar: AppBar(
+          title: const Text("Kharcha"),
+          actions: [
+            IconButton(
+              onPressed: _openAddExpenseSheet,
+              icon: const Icon(Icons.add),
+            ),
+          ],
         ),
-      ],
-    ));
+        body: Column(
+          children: [
+            const Text('chart'),
+            Expanded(
+              child: ExpensesList(expenses: _registeredExpenses),
+            ),
+          ],
+        ));
   }
 }
