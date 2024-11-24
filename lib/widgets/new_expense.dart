@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:Kharcha/models/expense.dart';
 
 class NewExpense extends StatefulWidget {
@@ -14,6 +13,7 @@ class _NewExpenseState extends State<NewExpense> {
   final _titleController = TextEditingController();
   final _amountController = TextEditingController();
   DateTime? _selectedDate;
+  Category _selectedCategory = Category.leisure;
 
   void _showDatePicker() async {
     final now = DateTime.now();
@@ -23,6 +23,31 @@ class _NewExpenseState extends State<NewExpense> {
     setState(() {
       _selectedDate = pickedDate;
     });
+  }
+
+  void _validate() {
+    final selectedAmount = double.tryParse(_amountController.text);
+    if (selectedAmount == null ||
+        selectedAmount <= 0 ||
+        _titleController.text.trim().isEmpty ||
+        _selectedDate == null) {
+      showDialog(
+        context: context,
+        builder: (ctx) => AlertDialog(
+          title: const Text('Invalid Input'),
+          content:
+              const Text('Make sure the title, amount and date are not empty.'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(ctx);
+              },
+              child: const Text('Okay'),
+            ),
+          ],
+        ),
+      );
+    }
   }
 
   @override
@@ -79,8 +104,33 @@ class _NewExpenseState extends State<NewExpense> {
               ),
             ],
           ),
+          const SizedBox(
+            height: 16,
+          ),
           Row(
             children: [
+              DropdownButton(
+                value: _selectedCategory,
+                items: Category.values
+                    .map(
+                      (category) => DropdownMenuItem(
+                        value: category,
+                        child: Text(
+                          category.name.toUpperCase(),
+                        ),
+                      ),
+                    )
+                    .toList(),
+                onChanged: (value) {
+                  if (value == null) return;
+                  setState(
+                    () {
+                      _selectedCategory = value;
+                    },
+                  );
+                },
+              ),
+              const Spacer(),
               TextButton(
                 onPressed: () {
                   Navigator.pop(context);
@@ -88,10 +138,7 @@ class _NewExpenseState extends State<NewExpense> {
                 child: const Text('Cancel'),
               ),
               ElevatedButton(
-                onPressed: () {
-                  print(_titleController.text);
-                  print(_amountController.text);
-                },
+                onPressed: _validate,
                 child: const Text('Add Expense'),
               ),
             ],
