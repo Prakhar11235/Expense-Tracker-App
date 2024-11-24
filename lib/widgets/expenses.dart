@@ -34,6 +34,28 @@ class _ExpensesState extends State<Expenses> {
     });
   }
 
+  void removeExpense(Expense expense) {
+    final removedIndex = _registeredExpenses.indexOf(expense);
+    setState(() {
+      _registeredExpenses.remove(expense);
+    });
+    ScaffoldMessenger.of(context).clearSnackBars();
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        duration: const Duration(seconds: 3),
+        content: const Text('Expense removed'),
+        action: SnackBarAction(
+          label: 'Undo',
+          onPressed: () {
+            setState(() {
+              _registeredExpenses.insert(removedIndex, expense);
+            });
+          },
+        ),
+      ),
+    );
+  }
+
   void _openAddExpenseSheet() {
     showModalBottomSheet(
       isScrollControlled: true,
@@ -46,6 +68,15 @@ class _ExpensesState extends State<Expenses> {
 
   @override
   Widget build(BuildContext context) {
+    Widget mainContent = const Center(
+      child: Text('Expense log is empty. Start adding some!'),
+    );
+    if (_registeredExpenses.isNotEmpty) {
+      mainContent = ExpensesList(
+        expenses: _registeredExpenses,
+        onDismissed: removeExpense,
+      );
+    }
     return Scaffold(
         appBar: AppBar(
           title: const Text("Kharcha"),
@@ -60,7 +91,7 @@ class _ExpensesState extends State<Expenses> {
           children: [
             const Text('chart'),
             Expanded(
-              child: ExpensesList(expenses: _registeredExpenses),
+              child: mainContent,
             ),
           ],
         ));
