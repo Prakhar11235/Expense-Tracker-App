@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:Kharcha/models/expense.dart';
-import 'package:Kharcha/widgets/expenses.dart';
 
 class NewExpense extends StatefulWidget {
   const NewExpense({super.key, required this.onAddExpense});
